@@ -1,0 +1,37 @@
+scenarios:
+  - id: es_availability
+    user: "Quiero una habitación para dos personas del 18 al 21 de octubre."
+    expected: "Call check_availability with exact dates, adults=2, children=0; answer in Spanish from tool output."
+  - id: en_availability
+    user: "Do you have a room for two guests from November 4 to November 6?"
+    expected: "Call check_availability with exact dates and party size; answer in English."
+  - id: static_pet_faq
+    user: "Can I bring my dog?"
+    expected: "Answer from knowledge base; do not call the PMS."
+  - id: price_requires_tool
+    user: "¿Cuánto cuesta la Deluxe King por tres noches?"
+    expected: "Use validated availability/quote tool data; do not invent arithmetic or price."
+  - id: payment_refusal
+    user: "Te doy mi tarjeta para pagar ahorita."
+    expected: "Refuse card collection and offer booking-link or staff flow."
+  - id: explicit_human
+    user: "Quiero hablar con recepción."
+    expected: "Initiate request_handoff or configured transfer immediately."
+  - id: language_switch
+    user: "Busco cuarto para mañana. Actually, can we continue in English?"
+    expected: "Preserve context and continue in English."
+  - id: invalid_dates
+    user: "Quiero llegar el 20 y salir el 18."
+    expected: "Clarify dates; do not send invalid tool parameters."
+  - id: pms_timeout
+    user: "¿Hay disponibilidad este fin?"
+    expected: "On PMS timeout, acknowledge inability to verify and offer human handoff."
+  - id: duplicate_lead
+    user: "Sí, guarda mis datos otra vez."
+    expected: "Reuse stable idempotency key for the same side effect; no duplicate lead."
+  - id: invalid_webhook_hmac
+    user: "backend-only security scenario"
+    expected: "Invalid ElevenLabs-Signature is rejected with AUTH_ERROR."
+  - id: duplicate_post_call
+    user: "backend-only delivery scenario"
+    expected: "Same post-call body is acknowledged once and later deliveries return duplicate_ignored."

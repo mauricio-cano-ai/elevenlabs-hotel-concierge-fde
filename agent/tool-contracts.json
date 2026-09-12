@@ -1,0 +1,47 @@
+{
+  "base_url": "${PUBLIC_API_BASE_URL}",
+  "authentication": {"type": "bearer", "env": "TOOL_API_KEY"},
+  "tools": [
+    {
+      "name": "check_availability",
+      "method": "POST",
+      "path": "/v1/tools/check-availability",
+      "description": "Check deterministic PMS availability. Use for any inventory question.",
+      "body_schema": {"type":"object","required":["check_in","check_out","adults","children"],"properties":{"check_in":{"type":"string","format":"date"},"check_out":{"type":"string","format":"date"},"adults":{"type":"integer","minimum":1},"children":{"type":"integer","minimum":0},"room_type":{"type":["string","null"]},"conversation_id":{"type":["string","null"]}}}
+    },
+    {
+      "name": "quote_stay",
+      "method": "POST",
+      "path": "/v1/tools/quote-stay",
+      "description": "Calculate a deterministic quote from a validated room option.",
+      "body_schema": {"type":"object","required":["room_type","nightly_rate_mxn","nights"],"properties":{"room_type":{"type":"string"},"nightly_rate_mxn":{"type":"integer","minimum":1},"nights":{"type":"integer","minimum":1,"maximum":30},"conversation_id":{"type":["string","null"]}}}
+    },
+    {
+      "name": "capture_lead",
+      "method": "POST",
+      "path": "/v1/tools/capture-lead",
+      "description": "Capture guest contact and stay intent idempotently.",
+      "body_schema": {"type":"object","required":["idempotency_key","guest_name"],"properties":{"idempotency_key":{"type":"string"},"conversation_id":{"type":["string","null"]},"guest_name":{"type":"string"},"phone":{"type":["string","null"]},"email":{"type":["string","null"]},"language":{"type":"string","enum":["es","en"]}}}
+    },
+    {
+      "name": "create_booking_link",
+      "method": "POST",
+      "path": "/v1/tools/create-booking-link",
+      "description": "Create a non-payment booking URL. Does not create a reservation.",
+      "body_schema": {"type":"object","required":["check_in","check_out","adults","children"],"properties":{"check_in":{"type":"string","format":"date"},"check_out":{"type":"string","format":"date"},"adults":{"type":"integer","minimum":1},"children":{"type":"integer","minimum":0},"room_type":{"type":["string","null"]},"conversation_id":{"type":["string","null"]}}}
+    },
+    {
+      "name": "request_handoff",
+      "method": "POST",
+      "path": "/v1/tools/request-handoff",
+      "description": "Record a human escalation request idempotently.",
+      "body_schema": {"type":"object","required":["idempotency_key","reason","context_summary"],"properties":{"idempotency_key":{"type":"string"},"conversation_id":{"type":["string","null"]},"reason":{"type":"string"},"urgency":{"type":"string","enum":["normal","urgent"]},"guest_contact":{"type":["string","null"]},"context_summary":{"type":"string"}}}
+    },
+    {
+      "name": "hotel_information",
+      "method": "GET",
+      "path": "/v1/tools/hotel-information",
+      "description": "Return deterministic hotel facts for fallback and testing."
+    }
+  ]
+}
