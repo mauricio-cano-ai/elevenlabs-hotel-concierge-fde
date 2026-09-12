@@ -10,3 +10,4 @@ htmlcov/
 *.db
 *.sqlite*
 .DS_Store
+*.egg-info/
