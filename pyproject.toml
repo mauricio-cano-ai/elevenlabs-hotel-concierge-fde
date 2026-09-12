@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=84.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -50,3 +50,8 @@ source = ["app"]
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["agent*", "evals*", "scripts*", "tests*", "docs*"]
+

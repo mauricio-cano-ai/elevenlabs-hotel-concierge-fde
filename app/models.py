@@ -6,7 +6,6 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field, model_validator
 
-
 Language = Literal["es", "en"]
 Urgency = Literal["normal", "urgent"]
 
@@ -20,7 +19,7 @@ class AvailabilityRequest(BaseModel):
     conversation_id: str | None = None
 
     @model_validator(mode="after")
-    def validate_dates(self) -> "AvailabilityRequest":
+    def validate_dates(self) -> AvailabilityRequest:
         if self.check_in < date.today():
             raise ValueError("check_in must not be in the past")
         if self.check_out <= self.check_in:

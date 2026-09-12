@@ -4,7 +4,6 @@ from fastapi.testclient import TestClient
 
 from app.main import create_app
 
-
 client = TestClient(create_app(database_url="sqlite+pysqlite:///:memory:", tool_api_key="secret"))
 
 

@@ -1,17 +1,40 @@
-$ErrorActionPreference = 'Stop'
+﻿$ErrorActionPreference = 'Stop'
+
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $Root
 
+function Invoke-Checked {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Executable,
+
+        [Parameter(Mandatory = $true)]
+        [string[]]$Arguments
+    )
+
+    & $Executable @Arguments
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "Command failed with exit code $LASTEXITCODE`: $Executable $($Arguments -join ' ')"
+    }
+}
+
 Write-Host '==> Python preflight'
-python --version
+Invoke-Checked -Executable 'python' -Arguments @('--version')
 
 if (-not (Test-Path '.venv')) {
-    python -m venv .venv
+    Invoke-Checked -Executable 'python' -Arguments @('-m', 'venv', '.venv')
 }
 
 $Py = Join-Path $Root '.venv\Scripts\python.exe'
-& $Py -m pip install --upgrade pip
-& $Py -m pip install -e '.[dev]'
+
+Invoke-Checked -Executable $Py -Arguments @(
+    '-m', 'pip', 'install', '--upgrade', 'pip', 'setuptools>=84.0.0', 'wheel'
+)
+
+Invoke-Checked -Executable $Py -Arguments @(
+    '-m', 'pip', 'install', '-e', '.[dev]'
+)
 
 if (-not (Test-Path '.env')) {
     Copy-Item '.env.example' '.env'
@@ -19,16 +42,40 @@ if (-not (Test-Path '.env')) {
 }
 
 Write-Host '==> Tests + coverage'
-& $Py -m pytest --cov=app --cov-report=term-missing --cov-fail-under=85
+Invoke-Checked -Executable $Py -Arguments @(
+    '-m', 'pytest',
+    '--cov=app',
+    '--cov-report=term-missing',
+    '--cov-fail-under=85'
+)
 
-Write-Host '==> Lint + type checks'
-& $Py -m ruff check .
-& $Py -m ruff format --check .
-& $Py -m mypy app
+Write-Host '==> Ruff lint'
+Invoke-Checked -Executable $Py -Arguments @(
+    '-m', 'ruff', 'check', '.'
+)
+
+Write-Host '==> Ruff format check'
+Invoke-Checked -Executable $Py -Arguments @(
+    '-m', 'ruff', 'format', '--check', '.'
+)
+
+Write-Host '==> Type checks'
+Invoke-Checked -Executable $Py -Arguments @(
+    '-m', 'mypy', 'app'
+)
+
+Write-Host '==> Dependency audit'
+Invoke-Checked -Executable $Py -Arguments @(
+    '-m', 'pip_audit'
+)
 
 Write-Host '==> Smoke test'
-& $Py scripts\smoke_test.py
+Invoke-Checked -Executable $Py -Arguments @(
+    'scripts\smoke_test.py'
+)
 
 Write-Host ''
-Write-Host 'PASS. To run the API:'
+Write-Host 'ALL LOCAL QUALITY GATES PASSED.' -ForegroundColor Green
+Write-Host 'To run the API:'
 Write-Host "  & '$Py' -m uvicorn app.main:app --reload"
+

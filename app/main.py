@@ -26,14 +26,20 @@ def create_app(
     tool_api_key: str | None = None,
     webhook_secret: str | None = None,
 ) -> FastAPI:
-    overrides: dict[str, str] = {}
+    settings = Settings()
+    updates: dict[str, object] = {}
+
     if database_url is not None:
-        overrides["database_url"] = database_url
+        updates["database_url"] = database_url
+
     if tool_api_key is not None:
-        overrides["tool_api_key"] = tool_api_key
+        updates["tool_api_key"] = tool_api_key
+
     if webhook_secret is not None:
-        overrides["elevenlabs_webhook_secret"] = webhook_secret
-    settings = Settings(**overrides)
+        updates["elevenlabs_webhook_secret"] = webhook_secret
+
+    if updates:
+        settings = Settings.model_validate({**settings.model_dump(), **updates})
     db = Database(settings.database_url)
     app = FastAPI(title=settings.app_name, version="0.1.0")
     app.state.settings = settings
