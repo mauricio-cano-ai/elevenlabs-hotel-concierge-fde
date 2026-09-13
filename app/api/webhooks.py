@@ -46,5 +46,10 @@ async def post_call(request: Request) -> dict[str, str]:
     )
     if not claimed:
         return {"status": "duplicate_ignored"}
-    request.app.state.conversation_repository.upsert_from_post_call(payload)
+    try:
+        request.app.state.conversation_repository.upsert_from_post_call(payload)
+    except Exception:
+        request.app.state.webhook_repository.mark_status(fingerprint, "failed")
+        raise
+    request.app.state.webhook_repository.mark_status(fingerprint, "processed")
     return {"status": "processed"}

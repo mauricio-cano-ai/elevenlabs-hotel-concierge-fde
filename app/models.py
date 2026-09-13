@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from typing import Literal
 from uuid import uuid4
 
@@ -135,3 +135,25 @@ class ErrorDetail(BaseModel):
 
 class ErrorEnvelope(BaseModel):
     error: ErrorDetail
+
+
+class PostCallEventAudit(BaseModel):
+    event_type: str
+    processing_status: str
+    received_at: datetime
+    signature_verified: Literal[True] = True
+
+
+class ConversationAudit(BaseModel):
+    agent_id: str | None = None
+    status: str
+    language: str | None = None
+    summary: str | None = None
+    escalated: bool
+
+
+class PostCallAuditResponse(BaseModel):
+    conversation_id: str
+    event_count: int
+    events: list[PostCallEventAudit]
+    conversation: ConversationAudit | None = None

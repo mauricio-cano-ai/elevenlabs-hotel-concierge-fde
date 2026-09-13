@@ -57,8 +57,9 @@ Open `http://127.0.0.1:8000/docs` for the tool API.
 | `POST /v1/tools/request-handoff` | idempotent escalation business event |
 | `GET /v1/tools/hotel-information` | deterministic FAQ fallback |
 | `POST /v1/webhooks/elevenlabs/post-call` | signed, idempotent post-call processing |
+| `GET /v1/ops/post-call-events/{conversation_id}` | authenticated, PII-minimized post-call verification |
 
-All tool routes require `Authorization: Bearer $TOOL_API_KEY`.
+All tool and ops routes require `Authorization: Bearer $TOOL_API_KEY`. The post-call webhook uses ElevenLabs HMAC verification instead.
 
 ## Real vs demo
 

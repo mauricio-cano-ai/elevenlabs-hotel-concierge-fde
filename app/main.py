@@ -3,6 +3,7 @@ from __future__ import annotations
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
+from app.api.ops import router as ops_router
 from app.api.tools import router as tools_router
 from app.api.webhooks import router as webhooks_router
 from app.config import Settings
@@ -37,7 +38,6 @@ def create_app(
 
     if webhook_secret is not None:
         updates["elevenlabs_webhook_secret"] = webhook_secret
-
     if updates:
         settings = Settings.model_validate({**settings.model_dump(), **updates})
     db = Database(settings.database_url)
@@ -79,6 +79,7 @@ def create_app(
 
     app.include_router(tools_router)
     app.include_router(webhooks_router)
+    app.include_router(ops_router)
     return app
 
 
