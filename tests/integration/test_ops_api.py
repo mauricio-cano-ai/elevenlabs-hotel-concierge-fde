@@ -38,7 +38,11 @@ def post_call_payload(conversation_id: str) -> dict[str, object]:
                 {"role": "user", "message": "My phone is +52 33 0000 0000"},
                 {"role": "agent", "message": "I can help with that."},
             ],
-            "metadata": {"language": "en", "escalated": False},
+            "metadata": {
+                "start_time_unix_secs": 1760000000,
+                "call_duration_secs": 42,
+                "cost": 60,
+            },
             "analysis": {
                 "transcript_summary": "Guest completed a safe demo interaction.",
                 "evaluation_criteria_results": {"resolved": "success"},
@@ -81,9 +85,11 @@ def test_post_call_audit_exposes_verified_processed_event_without_raw_transcript
     assert body["events"][0]["event_type"] == "post_call_transcription"
     assert body["events"][0]["processing_status"] == "processed"
     assert body["events"][0]["signature_verified"] is True
-    assert body["conversation"]["agent_id"] == "agent-live-demo"
-    assert body["conversation"]["language"] == "en"
-    assert body["conversation"]["summary"] == "Guest completed a safe demo interaction."
+    assert body["conversation"] == {
+        "agent_id": "agent-live-demo",
+        "status": "done",
+    }
+    assert "Guest completed a safe demo interaction." not in response.text
     assert "+52 33 0000 0000" not in response.text
 
 

@@ -29,9 +29,6 @@ def post_call_events(conversation_id: str, request: Request) -> PostCallAuditRes
         conversation = ConversationAudit(
             agent_id=conversation_row.agent_id,
             status=conversation_row.status,
-            language=conversation_row.language,
-            summary=conversation_row.summary,
-            escalated=conversation_row.escalated,
         )
 
     return PostCallAuditResponse(

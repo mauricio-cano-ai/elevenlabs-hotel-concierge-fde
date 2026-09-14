@@ -19,8 +19,10 @@ GET /v1/ops/post-call-events/{conversation_id}
 
 The ops endpoint is protected with `Authorization: Bearer $TOOL_API_KEY`. A returned event has
 `signature_verified: true` because invalid signatures are rejected before an event is persisted.
-The endpoint deliberately omits the raw transcript; it returns only event metadata and the stored
-conversation summary needed for demo verification.
+The endpoint deliberately omits the raw transcript and stored conversation summary. It returns
+only event metadata plus non-content conversation status needed for demo verification. The backend
+may retain a summary internally for outcome processing, but the ops verification surface does not
+expose conversational content.
 
 ## Live verification
 
@@ -47,10 +49,7 @@ Expected shape:
   ],
   "conversation": {
     "agent_id": "...",
-    "status": "done",
-    "language": "es",
-    "summary": "...",
-    "escalated": false
+    "status": "done"
   }
 }
 ```

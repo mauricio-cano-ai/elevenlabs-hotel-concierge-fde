@@ -147,9 +147,6 @@ class PostCallEventAudit(BaseModel):
 class ConversationAudit(BaseModel):
     agent_id: str | None = None
     status: str
-    language: str | None = None
-    summary: str | None = None
-    escalated: bool
 
 
 class PostCallAuditResponse(BaseModel):
